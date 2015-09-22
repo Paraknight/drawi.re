@@ -62,7 +62,7 @@ document.add-event-listener \touchend   !-> up it.target-touches[0]
 
 require! { \./net.ls : { PeerNetwork } }
 
-canvas-req = false
+canvas-req = true
 
 peer-net = new PeerNetwork 'amar.io:9987'
   ..on \connection (peer) !->
