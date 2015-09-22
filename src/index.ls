@@ -27,7 +27,7 @@ document.get-element-by-id \color-picker
   ..onchange = !->
     color := @value
     local-storage.color = color
-    #SKETCH.net.send('color', color);
+    broadcast \color color
 
 var prev-x, prev-y
 is-mouse-down = false
@@ -36,7 +36,7 @@ down = !->
   prev-x := it.offset-x
   prev-y := it.offset-y
   is-mouse-down := true
-  #SKETCH.net.send('mouse', 0, it.offset-x, it.offset-y);
+  broadcast \down x: it.offset-x, y: it.offset-y
 
 move = !->
   return unless is-mouse-down
@@ -47,12 +47,11 @@ move = !->
   prev-x := it.offset-x
   prev-y := it.offset-y
   ctx.stroke!
-  #SKETCH.net.send('mouse', 1, it.offset-x, it.offset-y);
+  broadcast \move x: it.offset-x, y: it.offset-y
 
 up = !->
   is-mouse-down := false
-  #SKETCH.net.send('mouse', 2, event.offset-x, event.offset-y);
-
+  broadcast \up
 
 document.add-event-listener \mousedown  down
 document.add-event-listener \touchstart !-> it.prevent-default!; down it.target-touches[0]
@@ -60,3 +59,36 @@ document.add-event-listener \mousemove  move
 document.add-event-listener \touchmove  !-> move it.target-touches[0]
 document.add-event-listener \mouseup    up
 document.add-event-listener \touchend   !-> up it.target-touches[0]
+
+require! { \./net.ls : { PeerNetwork } }
+
+peer-net = new PeerNetwork 'amar.io:9987'
+  ..on \connection (peer) !->
+    #log "Peer #{peer.uid} connected"
+
+    peer
+      ..on \color (color) !->
+        @color = color
+      ..on \down !->
+        @prev-x = it.x
+        @prev-y = it.y
+        @is-mouse-down = true
+      ..on \move !->
+        return unless @is-mouse-down
+        ctx.stroke-style = @color or \#000000
+        ctx.begin-path!
+        ctx.move-to @prev-x, @prev-y
+        ctx.line-to it.x, it.y
+        @prev-x = it.x
+        @prev-y = it.y
+        ctx.stroke!
+      ..on \up !-> @is-mouse-down = false
+      ..on \disconnect !->
+        #log "Peer #{peer.uid} disconnected"
+
+    peer.send \color color
+
+  ..on \uid (uid) !->
+    @join room
+
+broadcast = (event, data) !-> for ,peer of peer-net.peers then peer.send event, data
