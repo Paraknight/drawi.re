@@ -1,0 +1,28 @@
+{
+  "name": "drawi.re",
+  "version": "1.0.0",
+  "description": "P2P collaborative sketching on the web",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Paraknight/drawi.re.git"
+  },
+  "keywords": [
+    "draw",
+    "sketch",
+    "drawi.re",
+    "collaborative",
+    "drawing",
+    "sketching",
+    "P2P",
+    "canvas"
+  ],
+  "author": "Yousef Amar <yousef@amar.io> (http://yousefamar.com/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Paraknight/drawi.re/issues"
+  },
+  "homepage": "https://github.com/Paraknight/drawi.re#readme"
+}
