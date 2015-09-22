@@ -74,10 +74,14 @@ peer-net = new PeerNetwork 'amar.io:9987'
         (data) !->
           unless data?
             chunks = canvas.to-data-URL \image/png .match /[\s\S]{1,256}/g
-            for chunk, id in chunks then peer.send \canvas { chunk, id, chunks.length }
+            chunks.for-each (chunk, id) !->
+              set-timeout !->
+                peer.send \canvas { chunk, id, chunks.length }
+              , id * 200
             return
           canvas-chunks := [] if data.id is 0
           canvas-chunks.push data.chunk
+          console.log data.id + '/' + data.length + ' chunks'
           return unless data.id is data.length - 1
           img = new Image!
           img.src = canvas-chunks.join ''
