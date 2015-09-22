@@ -38,8 +38,11 @@ down = !->
   is-mouse-down := true
   broadcast \down x: it.offset-x, y: it.offset-y
 
+pt-count = 0
+
 move = !->
   return unless is-mouse-down
+  return unless (pt-count := (pt-count + 1) % 4) is 0
   ctx.stroke-style = color
   ctx.begin-path!
   ctx.move-to prev-x, prev-y
@@ -51,6 +54,7 @@ move = !->
 
 up = !->
   is-mouse-down := false
+  pt-count := 0
   broadcast \up
 
 document.add-event-listener \mousedown  down
