@@ -62,11 +62,26 @@ document.add-event-listener \touchend   !-> up it.target-touches[0]
 
 require! { \./net.ls : { PeerNetwork } }
 
+canvas-req = false
+
 peer-net = new PeerNetwork 'amar.io:9987'
   ..on \connection (peer) !->
     #log "Peer #{peer.uid} connected"
 
     peer
+      ..on \canvas do ->
+        canvas-chunks = []
+        (data) !->
+          unless data?
+            chunks = canvas.to-data-URL \image/png .match /[\s\S]{1,256}/g
+            for chunk, id in chunks then peer.send \canvas { chunk, id, chunks.length }
+            return
+          canvas-chunks := [] if data.id is 0
+          canvas-chunks.push data.chunk
+          return unless data.id is data.length - 1
+          img = new Image!
+          img.src = canvas-chunks.join ''
+          ctx.draw-image img, 0 0
       ..on \color (color) !->
         @color = color
       ..on \down !->
@@ -88,7 +103,13 @@ peer-net = new PeerNetwork 'amar.io:9987'
 
     peer.send \color color
 
+    unless canvas-req
+      peer.send \canvas
+      canvas-req := true
+
   ..on \uid (uid) !->
-    @join room
+    @join "drawire.#room"
 
 broadcast = (event, data) !-> for ,peer of peer-net.peers then peer.send event, data
+
+
