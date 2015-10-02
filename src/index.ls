@@ -66,30 +66,20 @@ document.add-event-listener \touchend   !-> up it.target-touches[0]
 
 require! { 'p2p-peer': { PeerNetwork } }
 
-canvas-req = true
+canvas-req = false
 
 peer-net = new PeerNetwork 'amar.io:9987'
   ..on \connection (peer) !->
     #log "Peer #{peer.uid} connected"
 
     peer
-      ..on \canvas do ->
-        canvas-chunks = []
-        (data) !->
-          unless data?
-            chunks = canvas.to-data-URL \image/png .match /[\s\S]{1,256}/g
-            chunks.for-each (chunk, id) !->
-              set-timeout !->
-                peer.send \canvas { chunk, id, chunks.length }
-              , id * 200
-            return
-          canvas-chunks := [] if data.id is 0
-          canvas-chunks.push data.chunk
-          console.log data.id + '/' + data.length + ' chunks'
-          return unless data.id is data.length - 1
-          img = new Image!
-          img.src = canvas-chunks.join ''
-          ctx.draw-image img, 0 0
+      ..on \canvas (data-url) !->
+        unless data-url?
+          peer.send \canvas canvas.to-data-URL \image/png
+          return
+        img = new Image!
+        img.src = data-url
+        ctx.draw-image img, 0 0
       ..on \color (color) !->
         @color = color
       ..on \down !->
