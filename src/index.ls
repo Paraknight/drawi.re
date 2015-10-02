@@ -11,13 +11,20 @@ document.write (require './canvas.jade')!
 canvas = document.get-element-by-id \main-canvas
 canvas.width = window.inner-width
 canvas.height = window.inner-height
-window.add-event-listener \resize !->
+
+resize-canvas = (width, height) !->
   img = new Image!
   img.src = canvas.to-data-URL \image/png
   img.onload = !->
-    canvas.width = window.inner-width
-    canvas.height = window.inner-height
+    canvas.width  = width
+    canvas.height = height
     ctx.draw-image img, 0 0
+
+window.add-event-listener \resize !->
+  width  = Math.max greatest-width,  window.inner-width
+  height = Math.max greatest-height, window.inner-height
+  resize-canvas width, height
+  broadcast \dims { canvas.width, canvas.height }
 
 ctx = canvas.get-context \2d
 
@@ -67,6 +74,8 @@ document.add-event-listener \touchend   !-> up it.target-touches[0]
 require! { 'p2p-peer': { PeerNetwork } }
 
 canvas-req = false
+greatest-width  = canvas.width
+greatest-height = canvas.height
 
 peer-net = new PeerNetwork 'amar.io:9987'
   ..on \connection (peer) !->
@@ -82,6 +91,11 @@ peer-net = new PeerNetwork 'amar.io:9987'
         ctx.draw-image img, 0 0
       ..on \color (color) !->
         @color = color
+      ..on \dims (dims) !->
+        @dims = dims
+        greatest-width  := Math.max greatest-width,  dims.width
+        greatest-height := Math.max greatest-height, dims.height
+        resize-canvas greatest-width, greatest-height
       ..on \down !->
         @prev-x = it.x
         @prev-y = it.y
@@ -100,6 +114,7 @@ peer-net = new PeerNetwork 'amar.io:9987'
         #log "Peer #{peer.uid} disconnected"
 
     peer.send \color color
+    peer.send \dims { canvas.width, canvas.height }
 
     unless canvas-req
       peer.send \canvas
@@ -109,5 +124,3 @@ peer-net = new PeerNetwork 'amar.io:9987'
     @join "drawire.#room"
 
 broadcast = (event, data) !-> for ,peer of peer-net.peers then peer.send event, data
-
-
