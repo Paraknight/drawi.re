@@ -42,7 +42,7 @@ pt-count = 0
 
 move = !->
   return unless is-mouse-down
-  return unless (pt-count := (pt-count + 1) % 4) is 0
+  #return unless (pt-count := (pt-count + 1) % 4) is 0
   ctx.stroke-style = color
   ctx.begin-path!
   ctx.move-to prev-x, prev-y
@@ -64,7 +64,7 @@ document.add-event-listener \touchmove  !-> move it.target-touches[0]
 document.add-event-listener \mouseup    up
 document.add-event-listener \touchend   !-> up it.target-touches[0]
 
-require! { \./net.ls : { PeerNetwork } }
+require! { 'p2p-peer': { PeerNetwork } }
 
 canvas-req = true
 
