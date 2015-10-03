@@ -67,7 +67,10 @@ up = !->
   broadcast \up
 
 document.add-event-listener \mousedown  down
-document.add-event-listener \touchstart !-> down it.target-touches[0]
+document.add-event-listener \touchstart !->
+  if (it.target or it.src-element) is canvas
+    it.prevent-default!
+  down it.target-touches[0]
 document.add-event-listener \mousemove  move
 document.add-event-listener \touchmove  !-> move it.target-touches[0]
 document.add-event-listener \mouseup    up
