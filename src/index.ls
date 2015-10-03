@@ -46,7 +46,7 @@ down = !->
   is-mouse-down := true
   broadcast \down x: prev-x, y: prev-y
 
-pt-count = 0
+#pt-count = 0
 
 move = !->
   return unless is-mouse-down
@@ -63,7 +63,7 @@ move = !->
 
 up = !->
   is-mouse-down := false
-  pt-count := 0
+  #pt-count := 0
   broadcast \up
 
 document.add-event-listener \mousedown  down
@@ -84,13 +84,22 @@ peer-net = new PeerNetwork 'amar.io:9987'
     #console.log "Peer #{peer.uid} connected"
 
     peer
-      ..on \canvas (data-url) !->
-        unless data-url?
-          peer.send \canvas canvas.to-data-URL \image/png
-          return
-        img = new Image!
-        img.src = data-url
-        ctx.draw-image img, 0 0
+      ..on \canvas do ->
+        canvas-chunks = []
+        (data) !->
+          unless data?
+            chunks = canvas.to-data-URL \image/png .match /[\s\S]{1,256}/g
+            console.log chunks.join ''
+            for chunk, id in chunks then peer.send \canvas { chunk, id, chunks.length }
+            return
+          canvas-chunks := [] if data.id is 0
+          canvas-chunks.push data.chunk
+          console.log data.id + '/' + data.length + ' chunks'
+          return unless data.id is data.length - 1
+          console.log canvas-chunks.join ''
+          img = new Image!
+          img.src = canvas-chunks.join ''
+          img.onload = !-> ctx.draw-image img, 0 0
       ..on \color (color) !->
         @color = color
       ..on \dims (dims) !->
