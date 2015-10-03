@@ -40,10 +40,11 @@ var prev-x, prev-y
 is-mouse-down = false
 
 down = !->
-  prev-x := it.offset-x
-  prev-y := it.offset-y
+  rect    = (it.target or it.src-element).get-bounding-client-rect!
+  prev-x := it.client-x - rect.left
+  prev-y := it.client-y - rect.top
   is-mouse-down := true
-  broadcast \down x: it.offset-x, y: it.offset-y
+  broadcast \down x: prev-x, y: prev-y
 
 pt-count = 0
 
@@ -53,11 +54,12 @@ move = !->
   ctx.stroke-style = color
   ctx.begin-path!
   ctx.move-to prev-x, prev-y
-  ctx.line-to it.offset-x, it.offset-y
-  prev-x := it.offset-x
-  prev-y := it.offset-y
+  rect    = (it.target or it.src-element).get-bounding-client-rect!
+  prev-x := it.client-x - rect.left
+  prev-y := it.client-y - rect.top
+  ctx.line-to prev-x, prev-y
   ctx.stroke!
-  broadcast \move x: it.offset-x, y: it.offset-y
+  broadcast \move x: prev-x, y: prev-y
 
 up = !->
   is-mouse-down := false
@@ -79,7 +81,7 @@ greatest-height = canvas.height
 
 peer-net = new PeerNetwork 'amar.io:9987'
   ..on \connection (peer) !->
-    #log "Peer #{peer.uid} connected"
+    #console.log "Peer #{peer.uid} connected"
 
     peer
       ..on \canvas (data-url) !->
