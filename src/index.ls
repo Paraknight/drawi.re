@@ -82,7 +82,7 @@ canvas-req = false
 greatest-width  = canvas.width
 greatest-height = canvas.height
 
-peer-net = new PeerNetwork 'amar.io:9987'
+peer-net = new PeerNetwork 'sig.amar.io'
   ..on \connection (peer) !->
     #console.log "Peer #{peer.uid} connected"
 
