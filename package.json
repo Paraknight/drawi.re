@@ -1,6 +1,6 @@
 {
   "name": "drawi.re",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "P2P collaborative sketching on the web",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Paraknight/drawi.re.git"
+    "url": "git+https://github.com/yousefamar/drawi.re.git"
   },
   "keywords": [
     "draw",
@@ -22,11 +22,11 @@
     "canvas"
   ],
   "author": "Yousef Amar <yousef@amar.io> (http://yousefamar.com/)",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Paraknight/drawi.re/issues"
+    "url": "https://github.com/yousefamar/drawi.re/issues"
   },
-  "homepage": "https://github.com/Paraknight/drawi.re#readme",
+  "homepage": "https://github.com/yousefamar/drawi.re#readme",
   "dependencies": {
     "express": "^4.16.4"
   },
@@ -35,7 +35,7 @@
     "jade": "^1.11.0",
     "jade-loader": "^0.7.1",
     "livescript-loader": "^0.1.5",
-    "p2p-peer": "paraknight/p2p-peer",
+    "p2p-peer": "yousefamar/p2p-peer",
     "style-loader": "^0.12.4",
     "stylus-loader": "^1.3.0",
     "webpack": "^1.12.2"
