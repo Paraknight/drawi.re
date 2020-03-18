@@ -23,8 +23,28 @@
 		<meta name="msapplication-config" content="/res/browserconfig.xml">
 		<meta name="theme-color" content="#030c22">
 		<title>drawi.re</title>
+		<style>
+			body {
+				overflow: hidden;
+			}
+			#main-canvas {
+				position: absolute;
+				margin: 0;
+				padding: 0;
+				top: 0;
+				left: 0;
+				cursor: crosshair;
+			}
+			#color-picker {
+				position: fixed;
+				top: 5px;
+				right: 5px;
+			}
+		</style>
 	</head>
 	<body>
-		<script src="/index.min.js" charset="utf-8"></script>
+		<canvas id="main-canvas"></canvas>
+		<input id="color-picker" type="color" />
+		<script src="/index.js" type="module" charset="utf-8"></script>
 	</body>
 </html>
